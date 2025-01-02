@@ -1,7 +1,7 @@
 version: '3'
 x-postgres:
   &postgres-common
-  image: "ankane/pgvector:v0.5.1"
+  image: anushasonte/postgres_pgvector
   user: postgres
   healthcheck:
     test: "exit 0"
@@ -12,6 +12,7 @@ x-postgres:
 services:
   postgres:
     <<: *postgres-common
+    platform: 'linux/arm/v7'
     container_name: "omnivore-postgres"
     ports:
       - "5432:5432"
@@ -21,6 +22,7 @@ services:
       - .env
 
   migrate:
+    platform: 'linux/arm/v7'
     build:
       context: ../../
       dockerfile: ./packages/db/Dockerfile
@@ -33,6 +35,7 @@ services:
         condition: service_healthy
 
   api:
+    platform: 'linux/arm/v7'
     build:
       context: ../../
       dockerfile: ./packages/api/Dockerfile
@@ -51,6 +54,7 @@ services:
         condition: service_completed_successfully
 
   queue-processor:
+    platform: 'linux/arm/v7'
     build:
       context: ../../
       dockerfile: ./packages/api/queue-processor/Dockerfile
@@ -62,6 +66,7 @@ services:
         condition: service_started
 
   web:
+    platform: 'linux/arm/v7'
     build:
       context: ../../
       dockerfile: ./packages/web/Dockerfile-self
@@ -81,6 +86,7 @@ services:
         condition: service_healthy
 
   image-proxy:
+    platform: 'linux/arm/v7'  
     build:
       context: ../../imageproxy
       dockerfile: ./Dockerfile
@@ -91,6 +97,7 @@ services:
       - .env
 
   content-fetch:
+    platform: 'linux/arm/v7'
     build:
       context: ../../
       dockerfile: ./packages/content-fetch/Dockerfile
@@ -108,6 +115,7 @@ services:
         condition: service_healthy
 
   redis:
+    platform: 'linux/arm/v7'
     image: "redis:7.2.4"
     container_name: "omnivore-redis"
     expose:
@@ -120,7 +128,8 @@ services:
       - redis_data:/data
 
   minio:
-    image: minio/minio
+    platform: 'linux/arm/v7'
+    image: michaeldwan/minio-arm32v7
     expose:
       - 1010
     ports:
@@ -138,7 +147,8 @@ services:
       - minio_data:/data
 
   createbuckets:
-    image: minio/mc
+    platform: 'linux/arm/v7'
+    image: ramosisw/mc:arm
     environment:
       - MINIO_ACCESS_KEY=minio
       - MINIO_SECRET_KEY=miniominio
@@ -156,6 +166,7 @@ services:
       exit 0;
       "
   mail-watch-server:
+    platform: 'linux/arm/v7'
     build:
       context: ../../
       dockerfile: ./packages/local-mail-watcher/Dockerfile
